@@ -19,6 +19,9 @@ def deriv(func,xi,window=0.000001,R0=2,eta=0.001,C=0.01) :
             
 def Rderiv(xi,R0=2,eta=0.001,C=0.01,window=0.0000001) :
     return deriv(Rinf,xi,window,R0=R0,eta=eta,C=C)
+            
+def Rdderiv(xi,R0=2,eta=0.001,C=0.01,window=0.0000001) :
+    return deriv(Rderiv,xi,window,R0=R0,eta=eta,C=C)
 
 def Rprob(xi,R0=2,eta=0.001,C=0.01) :
     return Rinf(xi,R0,eta)/xi
@@ -190,8 +193,8 @@ def plotRprob(R0,eta=0.001) :
     plt.plot(xx,Rprob)
     
     
-def plotit(func,R0=2,eta=0.001,C=0.01,numPoints=100,fignum=1) :
-    xx = np.linspace(0.001,1,numPoints)
+def plotit(func,R0=2,eta=0.001,C=0.01,numPoints=100,fignum=1,xrange=(0,1)) :
+    xx = np.linspace(xrange[0]+0.001,xrange[1],numPoints)
     toplot = np.empty_like(xx)
     for i in range(len(xx)) :
         toplot[i] = func(xx[i],R0,eta,C)
@@ -237,3 +240,45 @@ def Rminusroot(xi,R0=2,eta=.001,C=0.01) :
     squareroot = np.sqrt(R0*R0*pow(xi,4)+2*R0*R0*pow(xi,3)+ R0*(R0-8)*xi*xi-4*R0*xi+4)
     return 1/xi/R0 + (1-xi)/2 - squareroot
     
+## random function for p'' rootfinding:
+def paperfunc(xi,R0=2,eta=0.001,C=0.01) :
+    return R0*Rderiv(xi,R0,eta,C)
+
+## locus of x,p for which R' could possibly =2 (for some eta):
+def RprimeIs2(xi,R0=2,eta=0.001,C=0.01) :
+    return (xi*R0-1)/(xi*R0-0.5)
+
+## RHS from Onenote Perversity/Epidemics/Feb 2021 Notes:
+def RHS(p,R0=2,eta=0.001,C=0.01) :
+    return (1-eta)*np.exp((p/2-1)/(1/p-1))
+
+## LHS from Onenote Perversity/Epidemics/Feb 2021 Notes:
+def LHS(p,R0=2,eta=0.001,C=0.01) :
+    return 1-p
+
+def justp(p,R0=2,eta=0.001,C=0.01) :
+    return p
+
+def auxfunc(p,R0=2,eta=0.001,C=0.01) :
+    return 1-np.exp(-p*(1-p/1.2)/(1-p))
+
+def weirdPoA(halfC,R0=2,eta=0.001,C=0.01) :
+    # from OneNote Perversity/Epidemics/Feb 2021 Notes:
+    Cactual = halfC*2
+    R1 = Rinf(1,R0=2/Cactual,eta=0.00000001,C=Cactual)
+    return (2+R1)/(Cactual+R1)
+
+
+## more random jumk
+def UBfunc(x,R0=2,eta=0.001,C=0.01) :
+    return (x*R0-1)/(x*R0-1/2)
+
+def LBfunc(x,R0=2,eta=0.001,C=0.01) :
+    return (x*R0-1)/x/R0
+
+def logfunc(x,R0=2,eta=0.001,C=0.01) :
+    return (np.log(2*x*R0-1)+np.log(1-eta))/R0
+
+def Wz(alpha,eta) :
+    return np.real(lambertw(-(1-eta)*alpha*np.exp(-alpha)))
+
