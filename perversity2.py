@@ -193,14 +193,17 @@ def plotRprob(R0,eta=0.001) :
     plt.plot(xx,Rprob)
     
     
-def plotit(func,R0=2,eta=0.001,C=0.01,numPoints=100,fignum=1,xrange=(0,1)) :
+def plotit(func,R0=2,eta=0.001,C=0.01,numPoints=100,ax=None,xrange=(0,1),ylim=(0,2),label=None,lw=5,ls='-') :
+    if ax is None:
+        fig,ax = plt.subplots()
     xx = np.linspace(xrange[0]+0.001,xrange[1],numPoints)
     toplot = np.empty_like(xx)
     for i in range(len(xx)) :
         toplot[i] = func(xx[i],R0,eta,C)
-    plt.figure(fignum)
-    plt.plot(xx,toplot)
-#    plt.ylim([0,1])
+    ax.plot(xx,toplot,label=label,lw=lw,ls=ls)
+    plt.ylim(ylim)
+    plt.xlim((0,1))
+    return ax
     
 def plotCost(R0=2,eta=0.001,C=0.01,numPoints=10,fignum=13,integer=True) :
     if integer:
@@ -282,3 +285,17 @@ def logfunc(x,R0=2,eta=0.001,C=0.01) :
 def Wz(alpha,eta) :
     return np.real(lambertw(-(1-eta)*alpha*np.exp(-alpha)))
 
+if __name__=="__main__" :
+    plt.close('all')
+    numPoints = 1000
+    lw = 3
+    eta2 = 0.05
+    ax = plotit(cost,R0=5,C=0.2,eta=eta2,numPoints=numPoints,lw=lw,ls='--',label='R0=5, eta='+str(eta2)+', C=0.2')
+    plotit(cost,R0=5,C=0.2,numPoints=numPoints,lw=lw,ax=ax,label='R0=5, eta=0.001, C=0.2')
+    plotit(cost,eta=eta2,numPoints=numPoints,lw=lw,ls='--',ax=ax,label='R0=2, eta='+str(eta2)+', C=0.01')
+    plotit(cost,numPoints=numPoints,lw=lw,label='R0=2, eta=0.001, C=0.01',ax=ax)
+    ax.legend(handlelength=3.5,fontsize=16)
+    plt.xlabel('Population Density',fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.ylabel('Cost',fontsize=16)
+    plt.yticks(fontsize=16)
