@@ -161,7 +161,7 @@ def isAltESS(numLoc,R0=2,eta=0.001,C=0.01) :
     xi = 1/numLoc
     happyTogether = Rderiv(xi,R0=R0,eta=eta,C=C) <= eta+C
     if happyTogether :
-        return deriv(Rderiv,xi,R0=R0,eta=eta,C=C) >= 0
+        return deriv(Rderiv,xi,R0=R0,eta=eta,C=C) > 0
     return False # if we aren't happy together, we're not ESS
 
 def findESS(R0=2,eta=0.001,C=0.01) :
@@ -290,6 +290,8 @@ if __name__=="__main__" :
     numPoints = 1000
     lw = 3
     eta2 = 0.05
+    max_locations = 12
+    locations_to_check = np.arange(1,max_locations)
     ax = plotit(cost,R0=5,C=0.2,eta=eta2,numPoints=numPoints,lw=lw,ls='--',label='R0=5, eta='+str(eta2)+', C=0.2')
     plotit(cost,R0=5,C=0.2,numPoints=numPoints,lw=lw,ax=ax,label='R0=5, eta=0.001, C=0.2')
     plotit(cost,eta=eta2,numPoints=numPoints,lw=lw,ls='--',ax=ax,label='R0=2, eta='+str(eta2)+', C=0.01')
@@ -299,3 +301,63 @@ if __name__=="__main__" :
     plt.xticks(fontsize=16)
     plt.ylabel('Cost',fontsize=16)
     plt.yticks(fontsize=16)
+    
+    ESS1x = []
+    ESS1y = []
+    aESS1x = []
+    aESS1y = []
+    for n in locations_to_check :
+        if isESS(n,R0=5,C=0.2,eta=eta2) :
+            ESS1x.append(1/n)
+            ESS1y.append(cost(1/n,R0=5,C=0.2,eta=eta2))
+        if isAltESS(n,R0=5,C=0.2,eta=eta2) :
+            aESS1x.append(1/n)
+            aESS1y.append(cost(1/n,R0=5,C=0.2,eta=eta2))
+    plt.scatter(ESS1x,ESS1y,s=80,marker='o',color='#1f77b4')
+    plt.scatter(aESS1x,aESS1y,s=160,marker="*",color='#1f77b4')
+    
+    ESS2x = []
+    ESS2y = []
+    aESS2x = []
+    aESS2y = []
+    for n in locations_to_check :
+        if isESS(n,R0=5,C=0.2) :
+            ESS2x.append(1/n)
+            ESS2y.append(cost(1/n,R0=5,C=0.2))
+        if isAltESS(n,R0=5,C=0.2) :
+            aESS2x.append(1/n)
+            aESS2y.append(cost(1/n,R0=5,C=0.2))
+    plt.scatter(ESS2x,ESS2y,s=80,marker='o',color='#ff7f0e')
+    plt.scatter(aESS2x,aESS2y,s=160,marker="*",color='#ff7f0e')
+    
+    
+    max_locations = 200
+    locations_to_check = [1,2,3,4,5] + [int(1/i) for i in np.arange(.2,.001,-.01)]
+    
+    ESS3x = []
+    ESS3y = []
+    aESS3x = []
+    aESS3y = []
+    for n in locations_to_check :
+        if isESS(n,R0=2,eta=eta2) :
+            ESS3x.append(1/n)
+            ESS3y.append(cost(1/n,R0=2,eta=eta2))
+        if isAltESS(n,R0=2,eta=eta2) :
+            aESS3x.append(1/n)
+            aESS3y.append(cost(1/n,R0=2,eta=eta2))
+    plt.scatter(ESS3x,ESS3y,s=80,marker='o',color='#2ca02c')
+    plt.scatter(aESS3x,aESS3y,s=160,marker="*",color='#2ca02c')
+    
+    ESS4x = []
+    ESS4y = []
+    aESS4x = []
+    aESS4y = []
+    for n in locations_to_check :
+        if isESS(n) :
+            ESS4x.append(1/n)
+            ESS4y.append(cost(1/n))
+        if isAltESS(n) :
+            aESS4x.append(1/n)
+            aESS4y.append(cost(1/n))
+    plt.scatter(ESS4x,ESS4y,s=80,marker='o',color='#d62728')
+    plt.scatter(aESS4x,aESS4y,s=120,marker="*",color='#d62728')
